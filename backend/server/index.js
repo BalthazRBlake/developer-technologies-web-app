@@ -27,4 +27,19 @@ server.get("/api/technology/:id", async (request, response) => {
   return response.send({ error: false, data: technology });
 });
 
+server.get("/api/technology/search/:name", async (request, response) => {
+  const { name } = request.params;
+  
+  let technologies = await TechnologyModel.find({ 
+    name: { $regex: new RegExp(name, "i") }
+  });
+
+  technologies = technologies.map(technology => {
+    technologies.logo = `${request.protocol}://${request.headers.host}/img/${technology.logo}`;
+    return technology;
+  });
+
+  return response.send({ error: false, data: technologies });
+});
+
 module.exports = server;
